@@ -1,0 +1,4 @@
+Safe Repo Health Check Report
+----------------------------
+Repository: shubham-chitalkar/repo-checker
+Commits: 8
