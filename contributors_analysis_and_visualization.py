@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from github import Github, Auth, GithubException
 
+os.makedirs("reports", exist_ok=True)
+
 token = os.getenv("GITHUB_TOKEN")
 if not token:
     raise Exception("❌ No GITHUB_TOKEN found. Export it first.")
@@ -15,7 +17,7 @@ except Exception as e:
     print(f"❌ Failed to initialize GitHub client: {e}")
     exit(1)
 
-repo_name = "shubham-chitalkar/repo-checker"  
+repo_name = "shubham-chitalkar/repo-checker"
 try:
     repo = g.get_repo(repo_name)
     print(f"✅ Accessed repository: {repo.full_name}")
@@ -35,12 +37,13 @@ try:
 except Exception as e:
     print(f"⚠️ Error fetching contributors: {e}")
 
+csv_file = "reports/contributors.csv"
 try:
-    with open("contributors.csv", "w", newline="") as csvfile:
+    with open(csv_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Contributor", "Commits"])
         writer.writerows(contributors_list)
-    print("📄 Contributors saved to contributors.csv")
+    print(f"📄 Contributors saved to {csv_file}")
 except Exception as e:
     print(f"⚠️ Failed to write CSV: {e}")
     exit(1)
@@ -48,20 +51,20 @@ except Exception as e:
 contributors = []
 commits = []
 try:
-    with open("contributors.csv", "r") as csvfile:
+    with open(csv_file, "r") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            contributors.append(row["Contributor"])  
-            commits.append(int(row["Commits"]))      
+            contributors.append(row["Contributor"])
+            commits.append(int(row["Commits"]))
     print("✅ CSV data loaded successfully for visualization")
 except Exception as e:
     print(f"❌ Error reading CSV: {e}")
     exit(1)
 
+png_file = "reports/contributors.png"
 try:
     plt.figure(figsize=(max(6, len(contributors)*0.7), 6))
     bars = plt.bar(contributors, commits, color="skyblue", edgecolor="black")
-
     for bar in bars:
         height = bar.get_height()
         plt.text(
@@ -73,7 +76,6 @@ try:
             fontsize=10,
             fontweight="bold"
         )
-
     plt.xlabel("Contributors", fontsize=12, fontweight="bold")
     plt.ylabel("Commits", fontsize=12, fontweight="bold")
     plt.title("Repository Contributors vs Commits", fontsize=14, fontweight="bold")
@@ -81,11 +83,14 @@ try:
     plt.xticks(rotation=45 if len(contributors) > 1 else 0,
                ha="right" if len(contributors) > 1 else "center")
     plt.tight_layout()
-    plt.savefig("contributors.png", dpi=300)
-    print("✅ Static chart saved as contributors.png")
+    plt.savefig(png_file, dpi=300)
+    plt.close()
+    print(f"✅ Static chart saved as {png_file}")
 except Exception as e:
     print(f"❌ Error generating static chart: {e}")
 
+html_file = "reports/contributors_interactive.html"
+interactive_png_file = "reports/contributors_interactive.png"
 try:
     data = sorted(zip(contributors, commits), key=lambda x: x[1], reverse=True)
     contributors_sorted, commits_sorted = zip(*data)
@@ -114,16 +119,15 @@ try:
         height=500
     )
 
-    fig.write_html("contributors_interactive.html")
-    print("✅ Interactive chart saved as contributors_interactive.html")
+    fig.write_html(html_file)
+    print(f"✅ Interactive chart saved as {html_file}")
 
     try:
-        fig.write_image("contributors_interactive.png", scale=2)
-        print("✅ Interactive PNG saved as contributors_interactive.png")
+        fig.write_image(interactive_png_file, scale=2)
+        print(f"✅ Interactive PNG saved as {interactive_png_file}")
     except:
         print("⚠️ PNG export failed. Install 'kaleido' for static image export.")
 
-    fig.show()
 except Exception as e:
     print(f"❌ Error generating interactive chart: {e}")
 
