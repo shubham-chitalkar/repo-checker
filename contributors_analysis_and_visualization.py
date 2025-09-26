@@ -1,20 +1,59 @@
+import os
 import csv
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from github import Github, Auth, GithubException
+
+token = os.getenv("GITHUB_TOKEN")
+if not token:
+    raise Exception("❌ No GITHUB_TOKEN found. Export it first.")
+
+try:
+    g = Github(auth=Auth.Token(token))
+    print("✅ GitHub client initialized successfully")
+except Exception as e:
+    print(f"❌ Failed to initialize GitHub client: {e}")
+    exit(1)
+
+repo_name = "shubham-chitalkar/repo-checker"  
+try:
+    repo = g.get_repo(repo_name)
+    print(f"✅ Accessed repository: {repo.full_name}")
+except GithubException as e:
+    print(f"❌ Error accessing repository {repo_name}: {e}")
+    exit(1)
+except Exception as e:
+    print(f"❌ Unexpected error accessing repository: {e}")
+    exit(1)
+
+contributors_list = []
+try:
+    contributors = repo.get_contributors()
+    for contributor in contributors:
+        contributors_list.append([contributor.login, contributor.contributions])
+        print(f"{contributor.login}: {contributor.contributions} commits")
+except Exception as e:
+    print(f"⚠️ Error fetching contributors: {e}")
+
+try:
+    with open("contributors.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Contributor", "Commits"])
+        writer.writerows(contributors_list)
+    print("📄 Contributors saved to contributors.csv")
+except Exception as e:
+    print(f"⚠️ Failed to write CSV: {e}")
+    exit(1)
 
 contributors = []
 commits = []
-
 try:
     with open("contributors.csv", "r") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            contributors.append(row["login"])       
-            commits.append(int(row["contributions"]))  
-    print("✅ CSV data loaded successfully")
-except FileNotFoundError:
-    print("❌ contributors.csv not found. Run contributor_analysis.py first.")
-    exit(1)
+            contributors.append(row["Contributor"])  
+            commits.append(int(row["Commits"]))      
+    print("✅ CSV data loaded successfully for visualization")
 except Exception as e:
     print(f"❌ Error reading CSV: {e}")
     exit(1)
@@ -41,7 +80,6 @@ try:
     plt.grid(axis="y", linestyle="--", alpha=0.7)
     plt.xticks(rotation=45 if len(contributors) > 1 else 0,
                ha="right" if len(contributors) > 1 else "center")
-
     plt.tight_layout()
     plt.savefig("contributors.png", dpi=300)
     print("✅ Static chart saved as contributors.png")
@@ -83,7 +121,7 @@ try:
         fig.write_image("contributors_interactive.png", scale=2)
         print("✅ Interactive PNG saved as contributors_interactive.png")
     except:
-        print("⚠ PNG export failed. Install 'kaleido' for static image export.")
+        print("⚠️ PNG export failed. Install 'kaleido' for static image export.")
 
     fig.show()
 except Exception as e:

@@ -1,15 +1,8 @@
-
-Advanced Checks:
-----------------
-No large files found
-No tests/ folder
-Could not check branch protection
-
-Advanced Checks:
-----------------
-No large files found
-No tests/ folder
-Could not check branch protection
+Repo Health Check Report
+----------------------
+Repository: repo-checker
+Branches: ['master']
+Commits: 16
 
 Advanced Checks:
 ----------------

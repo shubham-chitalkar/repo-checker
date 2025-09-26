@@ -1,13 +1,13 @@
 import os
-from github import Github
+from github import Github, Auth
 
 token = os.getenv("GITHUB_TOKEN")
 if not token:
     raise Exception("❌ No GITHUB_TOKEN found. Export it first.")
 
-from github import Github, Auth
 g = Github(auth=Auth.Token(token))
-repo = g.get_repo("shubham-chitalkar/repo-checker")  
+repo_name = "shubham-chitalkar/repo-checker" 
+repo = g.get_repo(repo_name)
 
 report_lines = []
 
@@ -57,6 +57,5 @@ with open("report.txt", "a") as f:
     f.write("----------------\n")
     for line in report_lines:
         f.write(line + "\n")
-
 print("\n📄 Results appended to report.txt")
 

@@ -1,19 +1,17 @@
 import os
-from github import Github, GithubException
+from github import Github, Auth, GithubException
 
 token = os.getenv("GITHUB_TOKEN")
 if not token:
-    raise Exception("❌ No GITHUB_TOKEN found. Please export it before running the script.")
+    raise Exception("❌ No GITHUB_TOKEN found. Please export it first.")
 
 try:
-from github import Github, Auth
-g = Github(auth=Auth.Token(token))
+    g = Github(auth=Auth.Token(token))
     print("✅ GitHub client initialized successfully")
 except Exception as e:
     print(f"❌ Failed to initialize GitHub client: {e}")
     exit(1)
-
-repo_name = "shubham-chitalkar/repo-checker"  
+repo_name = "shubham-chitalkar/repo-checker"   
 try:
     repo = g.get_repo(repo_name)
     print(f"✅ Accessed repository: {repo.full_name}")

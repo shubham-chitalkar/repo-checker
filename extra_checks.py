@@ -1,15 +1,23 @@
 import os
-from github import Github
+from github import Github, Auth, GithubException
 
 token = os.getenv("GITHUB_TOKEN")
-from github import Github, Auth
+if not token:
+    raise Exception("❌ No GITHUB_TOKEN found. Export it first.")
+
 g = Github(auth=Auth.Token(token))
-repo = g.get_repo("shubham-chitalkar/repo-checker")
+repo_name = "shubham-chitalkar/repo-checker" 
+try:
+    repo = g.get_repo(repo_name)
+    print(f"✅ Accessed repository: {repo.full_name}")
+except GithubException as e:
+    print(f"❌ Error accessing repository {repo_name}: {e}")
+    exit(1)
 
 try:
     gitignore = repo.get_contents(".gitignore")
     print("✅ .gitignore found")
-except:
+except GithubException:
     print("❌ .gitignore missing")
 
 if repo.description:
@@ -23,10 +31,14 @@ if topics:
 else:
     print("❌ No topics set")
 
-with open("report.txt", "w") as f:
-    f.write("Repo Health Check Report\n")
-    f.write("----------------------\n")
-    f.write(f"Repository: {repo.name}\n")
-    f.write(f"Branches: {[b.name for b in repo.get_branches()]}\n")
-    f.write(f"Commits: {repo.get_commits().totalCount}\n")
+try:
+    with open("report.txt", "w") as f:
+        f.write("Repo Health Check Report\n")
+        f.write("----------------------\n")
+        f.write(f"Repository: {repo.name}\n")
+        f.write(f"Branches: {[b.name for b in repo.get_branches()]}\n")
+        f.write(f"Commits: {repo.get_commits().totalCount}\n")
+    print("📄 Report saved to report.txt")
+except Exception as e:
+    print(f"⚠️ Failed to write report: {e}")
 
