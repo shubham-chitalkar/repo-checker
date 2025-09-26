@@ -2,35 +2,40 @@ name: Repo Checker Automation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ master ]
   schedule:
-    - cron: '0 3 * * 1'  
+    - cron: '0 3 * * 1'  # every Monday 3:00 UTC
 
 jobs:
   run-repo-checker:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repo
       - uses: actions/checkout@v4
 
+      # Step 2: Set up Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install plotly kaleido pandas
+          pip install requests PyGithub tabulate python-dotenv plotly kaleido matplotlib
 
-      - name: Run all checks
+      # Step 4: Run all scripts
+      - name: Run All Checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 run_all_checks.py
+        run: |
+          python3 run_all_checks.py
 
+      # Step 5: Upload reports as artifacts
       - name: Upload Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: repo-checker-reports
           path: reports/
