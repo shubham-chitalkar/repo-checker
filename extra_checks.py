@@ -1,27 +1,32 @@
 import os
-import re
 from github import Github
 
 token = os.getenv("GITHUB_TOKEN")
-if not token:
-    raise Exception("Please set your GITHUB_TOKEN environment variable")
+from github import Github, Auth
+g = Github(auth=Auth.Token(token))
+repo = g.get_repo("shubham-chitalkar/repo-checker")
 
-g = Github(token)
-repo = g.get_repo("shubham-chitalkar/repo-checker") 
-
-files = [f.name for f in repo.get_contents("")]
-if ".gitignore" in files:
+try:
+    gitignore = repo.get_contents(".gitignore")
     print("✅ .gitignore found")
-else:
+except:
     print("❌ .gitignore missing")
 
 if repo.description:
-    print(f"✅ Repository description: {repo.description}")
+    print(f"✅ Repo description: {repo.description}")
 else:
-    print("❌ Repository description missing")
+    print("❌ Repo description not set")
 
 topics = repo.get_topics()
 if topics:
-    print(f"✅ Repository topics: {topics}")
+    print(f"✅ Topics: {topics}")
 else:
-    print("❌ Repository has no topics/tags")
+    print("❌ No topics set")
+
+with open("report.txt", "w") as f:
+    f.write("Repo Health Check Report\n")
+    f.write("----------------------\n")
+    f.write(f"Repository: {repo.name}\n")
+    f.write(f"Branches: {[b.name for b in repo.get_branches()]}\n")
+    f.write(f"Commits: {repo.get_commits().totalCount}\n")
+

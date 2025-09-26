@@ -2,12 +2,9 @@ import os
 from github import Github
 
 token = os.getenv("GITHUB_TOKEN")
-if not token:
-    raise Exception("Please set your GITHUB_TOKEN environment variable")
-
-g = Github(token)
-
-repo = g.get_repo("shubham-chitalkar/repo-checker") 
+from github import Github, Auth
+g = Github(auth=Auth.Token(token))
+repo = g.get_repo("shubham-chitalkar/repo-checker")
 
 try:
     readme = repo.get_readme()
@@ -26,3 +23,4 @@ try:
     print(f"✅ License found: {license_file.license.name}")
 except:
     print("❌ LICENSE file missing")
+

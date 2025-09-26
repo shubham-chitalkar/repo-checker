@@ -9,11 +9,11 @@ try:
     with open("contributors.csv", "r") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            contributors.append(row["Contributor"])
-            commits.append(int(row["Commits"]))
+            contributors.append(row["login"])       
+            commits.append(int(row["contributions"]))  
     print("✅ CSV data loaded successfully")
 except FileNotFoundError:
-    print("❌ contributors.csv not found. Run Day 7 first.")
+    print("❌ contributors.csv not found. Run contributor_analysis.py first.")
     exit(1)
 except Exception as e:
     print(f"❌ Error reading CSV: {e}")
@@ -45,7 +45,6 @@ try:
     plt.tight_layout()
     plt.savefig("contributors.png", dpi=300)
     print("✅ Static chart saved as contributors.png")
-
 except Exception as e:
     print(f"❌ Error generating static chart: {e}")
 
@@ -87,7 +86,6 @@ try:
         print("⚠ PNG export failed. Install 'kaleido' for static image export.")
 
     fig.show()
-
 except Exception as e:
     print(f"❌ Error generating interactive chart: {e}")
 
