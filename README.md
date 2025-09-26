@@ -1,20 +1,16 @@
-A small Python toolset to check GitHub repository health, analyze contributors, and generate visual reports.
 
-- Check for README, LICENSE, .gitignore
-- Count commits and list branches
-- Detect large files and missing tests
-- Contributor analysis → `contributors.csv`
-- Static & interactive visualizations → `contributors.png`, `contributors_interactive.html`
-- Safe token usage via environment variable (`GITHUB_TOKEN`)
+Repo Checker is a Python-based tool to analyze GitHub repositories. It performs health checks, analyzes contributors, and generates visualizations. The project helps developers and teams maintain clean, well-documented, and safe repositories.
 
-- Python 3.8+
-- Git
-- A GitHub personal access token (with `repo` or `public_repo` permissions depending on repo visibility)
+
+1. **Basic Checks** – Verify README, commits, and LICENSE.
+2. **Advanced Checks** – Detect large files, missing `tests/` folder, and check branch protection.
+3. **Safe Checks** – Handles errors gracefully and saves results to `safe_report.txt`.
+4. **Contributor Analysis** – Counts commits per contributor and saves data to `contributors.csv`.
+5. **Visualization** – Generates static (`contributors.png`) and interactive (`contributors_interactive.html`) charts for contributors.
+
+
 
 ```bash
-git clone https://github.com/shubham-chitalkar/repo-checker.git
+git clone https://github.com/your-username/repo-checker.git
 cd repo-checker
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
 
