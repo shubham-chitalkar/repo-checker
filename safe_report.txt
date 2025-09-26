@@ -1,6 +1,0 @@
-Safe Repo Health Check Report
-----------------------------
-Repository: shubham-chitalkar/repo-checker
-Commits: 16
-License: MIT License
-✅ README.md found
